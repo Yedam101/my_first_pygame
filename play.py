@@ -43,7 +43,7 @@ while True:
 
     if player_rect.colliderect(enamy_rect): # True or False 
 
-    # 1:13:42 https://www.youtube.com/watch?v=AY9MnQ4x3zk
+    
 
     pygame.display.update() # 창이 while 루프 종료 전까지는 계속 켜있게 해줌
     clock.tick(60) # 최대 프레임 속도 설정
