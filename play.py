@@ -1,6 +1,16 @@
 import pygame
 from sys import exit
 
+def display_score():
+    curr_time = int(pygame.time.get_ticks() / 100) - start_time
+    score_surf = test_font.render(f'Score: {curr_time}', False, 'gold')
+    score_rect = score_surf.get_rect(topleft = (350,60))
+    # pygame.draw.rect(screen, 'green', score_rect)
+    # pygame.draw.rect(screen, 'green', score_rect, 10)
+    screen.blit(score_surf, score_rect)
+    return curr_time
+    
+
 pygame.init() 
 screen = pygame.display.set_mode((800,400)) # 바탕화면
 # 여기까지 실행하면 창이 떴다가 바로 꺼짐. 이를 해결하기 위해 While 루프 돌리기
@@ -8,14 +18,15 @@ pygame.display.set_caption('Runner') # 게임 창의 title
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
 game_active = True
+start_time = 0
 
+store_score = [0]
+max_score = max(store_score)
 
 sky_surface = pygame.image.load('graphics/sky1.png').convert_alpha() # 바탕 위의 스크린
 ground_surface = pygame.image.load('graphics/ground2.png').convert_alpha()
 
-score_surf = test_font.render("GG", False, 'Blue')
-score_rect = score_surf.get_rect(topleft = (400,60))
-
+# max_surf = test_font.render(f'BEST: {max_score}', False, 'Blue')
 
 enamy_surf = pygame.image.load("graphics/snail/walk01.png").convert_alpha()
 enamy_rect = enamy_surf.get_rect(center = (500, 300))
@@ -25,7 +36,6 @@ player_rect = player_surf.get_rect(midbottom = (80,330))
 player_gravity = 0
 
 
-
 while True:
     for event in pygame.event.get(): # 창 닫기 버튼
         if event.type == pygame.QUIT:
@@ -33,9 +43,9 @@ while True:
             exit()
         
         if game_active:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if player_rect.collidepoint(event.pos):
-                    player_gravity = -20
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     if player_rect.collidepoint(event.pos):
+            #         player_gravity = -20
             
             if event.type == pygame.KEYDOWN: # jump
                 if event.key == pygame.K_SPACE and player_rect.bottom >= 330:
@@ -46,17 +56,21 @@ while True:
                 game_active = True
                 enamy_rect.left = 800
                 player_rect.left = 0
+                start_time = int(pygame.time.get_ticks() / 100)
+                         
                 
-                
-
     if game_active:
         screen.blit(sky_surface, (0,0)) # blit는 블록 이미지 전송을 의미. 화면 만들기
         screen.blit(ground_surface, (0,20))
-        pygame.draw.rect(screen, 'green', score_rect)
-        pygame.draw.rect(screen, 'green', score_rect, 10)
-        #pygame.draw.ellipse(screen, 'gold', (0,0), (800,500))
-        screen.blit(score_surf, score_rect)
-
+        # pygame.draw.rect(screen, 'green', score_rect)
+        # pygame.draw.rect(screen, 'green', score_rect, 10)
+        # #pygame.draw.ellipse(screen, 'gold', (0,0), (800,500))
+        # screen.blit(score_surf, score_rect)
+        
+        display_score()
+        max_score = max(store_score)
+        max_surf = test_font.render(f'BEST: {max_score}', False, 'gold') 
+        screen.blit(max_surf, (30, 20)) # best score 표시
 
         enamy_rect.x -= 3
         if enamy_rect.x < -50:
@@ -77,6 +91,8 @@ while True:
 
         
         if enamy_rect.colliderect(player_rect):
+            store_score.append(display_score())
+            max_score = max(store_score) # 죽을 때 best score 계산
             game_active = False
     else:
         screen.fill('yellow')
