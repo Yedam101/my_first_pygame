@@ -14,10 +14,10 @@ def display_score():
 pygame.init() 
 screen = pygame.display.set_mode((800,400)) # 바탕화면
 # 여기까지 실행하면 창이 떴다가 바로 꺼짐. 이를 해결하기 위해 While 루프 돌리기
-pygame.display.set_caption('Runner') # 게임 창의 title
+pygame.display.set_caption('Pixel Jumper') # 게임 창의 title
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
-game_active = True
+game_active = False
 start_time = 0
 
 store_score = [0]
@@ -35,6 +35,13 @@ player_surf = pygame.image.load("graphics/Player/Skeleton_Walk1.png").convert_al
 player_rect = player_surf.get_rect(midbottom = (80,330))
 player_gravity = 0
 
+# intro screen
+player_stand = pygame.image.load("graphics/snail/walk06.png").convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand,0,2)
+player_stand_rect = player_stand.get_rect(center = (380,210))
+
+game_name = test_font.render('Pixel Jumper', False, 'black')
+game_name_rect = game_name.get_rect(center = (420,120))
 
 while True:
     for event in pygame.event.get(): # 창 닫기 버튼
@@ -95,7 +102,17 @@ while True:
             max_score = max(store_score) # 죽을 때 best score 계산
             game_active = False
     else:
-        screen.fill('yellow')
+        screen.fill('dark gray')
+        screen.blit(player_stand, player_stand_rect)
+        screen.blit(game_name, game_name_rect)
+        
+        max_score = max(store_score)
+        max_surf = test_font.render(f'BEST: {max_score}', False, 'gold') 
+        screen.blit(max_surf, (30, 20))
+
+        curr_score = store_score[-1]
+        curr_surf = test_font.render(f'CURRENT: {curr_score}', False, 'gold') 
+        screen.blit(curr_surf, (30, 60))
 
 
     pygame.display.update() # 창이 while 루프 종료 전까지는 계속 켜있게 해줌
